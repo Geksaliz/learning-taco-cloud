@@ -4,14 +4,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
-import tacos.web.HomeController;
+import tacos.web.BasicController;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(HomeController.class)
-class HomeControllerTest {
+@WebMvcTest(BasicController.class)
+class BasicControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;

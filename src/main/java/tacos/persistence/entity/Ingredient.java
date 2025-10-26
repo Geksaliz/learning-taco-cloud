@@ -9,7 +9,6 @@ import tacos.domain.IngredientType;
 @Getter
 @ToString
 @AllArgsConstructor
-@RequiredArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
 public class Ingredient {
     @Id
