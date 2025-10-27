@@ -41,7 +41,10 @@ public class SecurityConfig {
     }
 
     private void csrfConfigurer(CsrfConfigurer<HttpSecurity> configurer) {
-        configurer.ignoringRequestMatchers("/h2-console/**");
+        configurer
+                .ignoringRequestMatchers("/h2-console/**")
+                .ignoringRequestMatchers("/design/**")
+                .ignoringRequestMatchers("/orders/**");
     }
 
     private void requestMatcherRegistry(

@@ -3,18 +3,18 @@ package tacos.persistence.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Getter
-@ToString
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class Taco {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -24,14 +24,11 @@ public class Taco {
 
     @NotNull
     @Size(min = 5, message = "Name must be at least 5 characters long")
+    @Setter
     private String name;
 
     @Size(min = 1, message = "You must choose at least 1 ingredient")
     @ManyToMany()
-    @ToString.Exclude
-    private final List<Ingredient> ingredients =  new ArrayList<>();
-
-    public void addIngredient(Ingredient ingredient) {
-        ingredients.add(ingredient);
-    }
+    @Setter
+    private List<Ingredient> ingredients;
 }

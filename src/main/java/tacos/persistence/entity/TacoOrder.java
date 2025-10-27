@@ -3,10 +3,7 @@ package tacos.persistence.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -16,7 +13,9 @@ import java.util.List;
 
 @Entity(name = "taco_order")
 @Getter
-@RequiredArgsConstructor
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class TacoOrder implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -50,6 +49,10 @@ public class TacoOrder implements Serializable {
 
     @Digits(integer = 3, fraction = 0, message = "Invalid CW")
     private String ccCW;
+
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
 
     @OneToMany(cascade = CascadeType.ALL)
     private final List<Taco> tacos = new ArrayList<>();

@@ -2,7 +2,7 @@ package tacos.web;
 
 import jakarta.validation.Valid;
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import tacos.persistence.entity.TacoOrder;
+import tacos.persistence.entity.User;
 import tacos.persistence.repository.OrderRepository;
 
 @Controller
@@ -32,11 +33,14 @@ public class OrderController {
     public String processOrder(
             @Valid TacoOrder tacoOrder,
             @NonNull Errors errors,
-            SessionStatus sessionStatus
+            SessionStatus sessionStatus,
+            @AuthenticationPrincipal User user
     ) {
         if (errors.hasErrors()) {
             return "orderForm";
         }
+
+        tacoOrder.setUser(user);
 
         orderRepository.save(tacoOrder);
         sessionStatus.setComplete();
