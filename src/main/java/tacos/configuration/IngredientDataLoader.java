@@ -3,11 +3,13 @@ package tacos.configuration;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import tacos.persistence.entity.Ingredient;
 import tacos.persistence.repository.IngredientRepository;
 
 import static tacos.domain.IngredientType.*;
 
+@Profile("!prod")
 @Configuration
 public class IngredientDataLoader {
     @Bean
