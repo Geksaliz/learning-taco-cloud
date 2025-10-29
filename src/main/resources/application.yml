@@ -3,6 +3,11 @@ spring:
     generate-unique-name: false
     name: tacocloud
 
+cors:
+  origin:
+    patterns: http://localhost*
+
 taco:
+  page-size: 10
   order:
     page-size: 10
