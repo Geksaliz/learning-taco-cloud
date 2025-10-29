@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @Entity(name = "users")
 @Data
-@NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
+@NoArgsConstructor(force = true)
 @RequiredArgsConstructor
 public class User implements UserDetails {
     @Serial
