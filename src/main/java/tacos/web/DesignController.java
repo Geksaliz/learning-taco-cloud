@@ -13,7 +13,6 @@ import tacos.persistence.entity.Taco;
 import tacos.persistence.entity.TacoOrder;
 import tacos.persistence.repository.IngredientRepository;
 
-import java.util.List;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
@@ -29,56 +28,56 @@ public class DesignController {
         this.ingredientRepository = ingredientRepository;
     }
 
-	@ModelAttribute
-	public void addIngredientsToModel(Model model) {
+    @ModelAttribute
+    public void addIngredientsToModel(Model model) {
         final Iterable<Ingredient> ingredients = ingredientRepository.findAll();
 
-		IngredientType[] types = IngredientType.values();
-		for (IngredientType type : types) {
-			model.addAttribute(
+        IngredientType[] types = IngredientType.values();
+        for (IngredientType type : types) {
+            model.addAttribute(
                     type.toString().toLowerCase(),
                     filterByType(ingredients, type)
             );
-		}
-	}
+        }
+    }
 
-	@ModelAttribute(name = "tacoOrder")
-	public TacoOrder order() {
-		return new TacoOrder();
-	}
+    @ModelAttribute(name = "tacoOrder")
+    public TacoOrder order() {
+        return new TacoOrder();
+    }
 
-	@ModelAttribute(name = "taco")
-	public Taco taco() {
-		return new Taco();
-	}
+    @ModelAttribute(name = "taco")
+    public Taco taco() {
+        return new Taco();
+    }
 
-	@GetMapping
-	public String showDesignForm() {
-		return "design";
-	}
+    @GetMapping
+    public String showDesignForm() {
+        return "design";
+    }
 
-	@PostMapping
-	public String processTaco(
-			@Valid Taco taco,
-			@NonNull Errors errors,
-			@ModelAttribute TacoOrder tacoOrder
-	) {
-		if (errors.hasErrors()) {
-			return "design";
-		}
+    @PostMapping
+    public String processTaco(
+            @Valid Taco taco,
+            @NonNull Errors errors,
+            @ModelAttribute TacoOrder tacoOrder
+    ) {
+        if (errors.hasErrors()) {
+            return "design";
+        }
 
-		tacoOrder.add(taco);
-		log.info("Processing taco: {}", taco);
+        tacoOrder.add(taco);
+        log.info("Processing taco: {}", taco);
 
-		return "redirect:/orders/current";
-	}
+        return "redirect:/orders/current";
+    }
 
-	private Iterable<Ingredient> filterByType(
+    private Iterable<Ingredient> filterByType(
             Iterable<Ingredient> ingredients,
-			IngredientType type
-	) {
-		return StreamSupport.stream(ingredients.spliterator(), false)
-				.filter(x -> x.getType().equals(type))
-				.collect(toList());
-	}
+            IngredientType type
+    ) {
+        return StreamSupport.stream(ingredients.spliterator(), false)
+                .filter(x -> x.getType().equals(type))
+                .collect(toList());
+    }
 }
