@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.rest.core.annotation.RestResource;
 
 import java.util.Date;
 import java.util.List;
@@ -16,7 +15,6 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@RestResource(rel = "tacos", path = "tacos")
 public class Taco {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

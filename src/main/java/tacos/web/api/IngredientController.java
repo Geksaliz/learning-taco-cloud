@@ -12,7 +12,7 @@ import java.util.Optional;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@RequestMapping(value = "/api/ingredients/ingredients", produces = APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/ingredients", produces = APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 public class IngredientController {
 

@@ -2,6 +2,11 @@ spring:
   datasource:
     generate-unique-name: false
     name: tacocloud
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          jwk-set-uri: http://localhost:8090/oauth2/jwks
 
 cors:
   origin:

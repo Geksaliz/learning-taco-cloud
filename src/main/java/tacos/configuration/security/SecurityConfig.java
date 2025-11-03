@@ -3,8 +3,10 @@ package tacos.configuration.security;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.*;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,6 +19,7 @@ import tacos.persistence.repository.UserRepository;
 
 import java.util.List;
 
+import static org.springframework.http.HttpMethod.*;
 import static org.springframework.web.cors.CorsConfiguration.ALL;
 import static tacos.domain.Roles.USER;
 
@@ -39,20 +42,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(this::csrfConfigurer)
-                .headers(headers ->
-                        headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+                .csrf(AbstractHttpConfigurer::disable)
+                .headers(this::headersConfiguration)
                 .cors(this::corsConfiguration)
                 .authorizeHttpRequests(this::requestMatcherRegistry)
-                .formLogin(this::loginForm)
+                .formLogin(this::loginFormConfiguration)
+                .oauth2ResourceServer(this::resourceServerConfiguration)
                 .build();
     }
 
-    private void csrfConfigurer(CsrfConfigurer<HttpSecurity> configurer) {
-        configurer
-                .ignoringRequestMatchers("/h2-console/**")
-                .ignoringRequestMatchers("/design/**")
-                .ignoringRequestMatchers("/orders/**");
+    private void headersConfiguration(HeadersConfigurer<HttpSecurity> configurer) {
+        configurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin);
     }
 
     private void corsConfiguration(CorsConfigurer<HttpSecurity> configurer) {
@@ -64,11 +64,21 @@ public class SecurityConfig {
     ) {
         authorize
                 .requestMatchers("/design", "/orders").hasRole(USER.name())
+                .requestMatchers(POST, "/api/ingredients").hasAuthority("SCOPE_writeIngredients")
+                .requestMatchers(POST, "/api/tacos").hasAuthority("SCOPE_writeIngredients")
+                .requestMatchers(PUT, "/api/orders/*").hasAuthority("SCOPE_writeIngredients")
+                .requestMatchers(PATCH, "/api/orders/*").hasAuthority("SCOPE_writeIngredients")
+                .requestMatchers(DELETE, "/api/ingredients/*").hasAuthority("SCOPE_deleteIngredients")
+                .requestMatchers(DELETE, "/api/orders/*").hasAuthority("SCOPE_deleteIngredients")
                 .anyRequest().permitAll();
     }
 
-    private void loginForm(FormLoginConfigurer<HttpSecurity> configurer) {
+    private void loginFormConfiguration(FormLoginConfigurer<HttpSecurity> configurer) {
         configurer.loginPage("/login").permitAll().defaultSuccessUrl("/design");
+    }
+
+    private void resourceServerConfiguration(OAuth2ResourceServerConfigurer<HttpSecurity> configurer) {
+        configurer.jwt(Customizer.withDefaults());
     }
 
     private CorsConfigurationSource corsConfigurationSource(List<String> originPatterns) {
