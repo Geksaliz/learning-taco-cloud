@@ -7,6 +7,8 @@ spring:
       resource-server:
         jwt:
           jwk-set-uri: http://localhost:8090/oauth2/jwks
+  kafka:
+    bootstrap-server: localhost:9092
 
 cors:
   origin:

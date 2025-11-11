@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import tacos.configuration.properties.OrderProperties;
+import tacos.service.OrderMessagingService;
 import tacos.persistence.entity.TacoOrder;
 import tacos.persistence.entity.User;
 import tacos.persistence.repository.OrderRepository;
@@ -26,6 +27,7 @@ import tacos.persistence.repository.OrderRepository;
 public class OrderController {
     private final OrderRepository orderRepository;
     private final OrderProperties  orderProperties;
+    private final OrderMessagingService orderMessagingService;
 
     @GetMapping("/current")
     public String orderForm() {
@@ -46,6 +48,7 @@ public class OrderController {
         tacoOrder.setUser(user);
 
         orderRepository.save(tacoOrder);
+        orderMessagingService.sendOrder(tacoOrder);
         sessionStatus.setComplete();
 
         return "redirect:/orders";
