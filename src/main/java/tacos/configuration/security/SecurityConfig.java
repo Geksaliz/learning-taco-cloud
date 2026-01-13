@@ -76,6 +76,8 @@ public class SecurityConfig {
                 .pathMatchers(PATCH, "/api/orders/*").hasAuthority("SCOPE_writeIngredients")
                 .pathMatchers(DELETE, "/api/ingredients/*").hasAuthority("SCOPE_deleteIngredients")
                 .pathMatchers(DELETE, "/api/orders/*").hasAuthority("SCOPE_deleteIngredients")
+                .pathMatchers("/actuator/health", "/actuator/info").permitAll()
+                .pathMatchers("/actuator/**").authenticated()
                 .anyExchange().permitAll();
     }
 

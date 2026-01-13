@@ -24,3 +24,12 @@ taco:
   page-size: 10
   order:
     page-size: 10
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
