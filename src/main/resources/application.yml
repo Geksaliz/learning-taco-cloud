@@ -1,4 +1,11 @@
 spring:
+  application:
+    name: taco-cloud
+  boot:
+    admin:
+      client:
+        url: http://localhost:8000
+
   r2dbc:
     url: r2dbc:postgresql://localhost:5432/taco-cloud
     username: postgres
@@ -26,9 +33,9 @@ taco:
     page-size: 10
 
 management:
-  info:
-    env:
-      enabled: true
+  endpoint:
+    health:
+      show-details: WHEN_AUTHORIZED
   endpoints:
     web:
       exposure:
