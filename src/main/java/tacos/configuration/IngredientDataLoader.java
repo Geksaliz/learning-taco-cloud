@@ -33,13 +33,13 @@ public class IngredientDataLoader {
             repository.saveAll(List.of(flourTortilla, cornTortilla, groundBeef, carnitas, tomatoes, lettuce,
                     cheddar, jack, salsa, sourCream));
 
-            tacoRepository.save(new Taco(null, "Carnivore",
+            tacoRepository.save(new Taco("Carnivore",
                     List.of(flourTortilla, groundBeef, carnitas, sourCream, salsa, cheddar)));
 
-            tacoRepository.save(new Taco(null, "Bovine Bounty",
+            tacoRepository.save(new Taco("Bovine Bounty",
                     List.of(cornTortilla, groundBeef, cheddar, jack, sourCream)));
 
-            tacoRepository.save(new Taco(null, "Veg-out",
+            tacoRepository.save(new Taco("Veg-out",
                     List.of(flourTortilla, cornTortilla, tomatoes, lettuce, salsa)));
         };
     }

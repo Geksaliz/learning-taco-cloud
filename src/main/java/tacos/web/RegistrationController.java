@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import reactor.core.publisher.Mono;
 import tacos.configuration.security.RegistrationForm;
 import tacos.persistence.repository.UserRepository;
 
@@ -17,14 +18,14 @@ public class RegistrationController {
     private final PasswordEncoder passwordEncoder;
 
     @GetMapping
-    public String registerForm() {
-        return "registration";
+    public Mono<String> registerForm() {
+        return Mono.just("registration");
     }
 
     @PostMapping
-    public String processRegistration(RegistrationForm form) {
+    public Mono<String> processRegistration(RegistrationForm form) {
         userRepository.save(form.toUser(passwordEncoder));
 
-        return "redirect:/login";
+        return Mono.just("redirect:/login");
     }
 }

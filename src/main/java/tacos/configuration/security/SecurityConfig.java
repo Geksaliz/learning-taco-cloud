@@ -3,18 +3,18 @@ package tacos.configuration.security;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.ReactiveAuthenticationManager;
+import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.*;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import tacos.persistence.repository.UserRepository;
 
 import java.util.List;
@@ -24,6 +24,7 @@ import static org.springframework.web.cors.CorsConfiguration.ALL;
 import static tacos.domain.Roles.USER;
 
 @Configuration
+@EnableWebFluxSecurity
 public class SecurityConfig {
     @Value("${cors.origin.patterns}")
     private List<String> corsOriginPatterns;
@@ -34,50 +35,55 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(UserRepository repository) {
-        return username -> repository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s not found", username)));
+    public ReactiveUserDetailsService userDetailsService(UserRepository repository) {
+        return repository::findByUsername;
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public ReactiveAuthenticationManager reactiveAuthenticationManager(
+            ReactiveUserDetailsService userDetailsService,
+            PasswordEncoder passwordEncoder
+    ) {
+        UserDetailsRepositoryReactiveAuthenticationManager manager =
+                new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService);
+        manager.setPasswordEncoder(passwordEncoder);
+        return manager;
+    }
+
+    @Bean
+    public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) throws Exception {
         return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .headers(this::headersConfiguration)
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .cors(this::corsConfiguration)
-                .authorizeHttpRequests(this::requestMatcherRegistry)
+                .authorizeExchange(this::requestMatcherRegistry)
                 .formLogin(this::loginFormConfiguration)
                 .oauth2ResourceServer(this::resourceServerConfiguration)
                 .build();
     }
 
-    private void headersConfiguration(HeadersConfigurer<HttpSecurity> configurer) {
-        configurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin);
-    }
-
-    private void corsConfiguration(CorsConfigurer<HttpSecurity> configurer) {
+    private void corsConfiguration(ServerHttpSecurity.CorsSpec configurer) {
         configurer.configurationSource(corsConfigurationSource(corsOriginPatterns));
     }
 
     private void requestMatcherRegistry(
-            AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry authorize
+            ServerHttpSecurity.AuthorizeExchangeSpec authorize
     ) {
         authorize
-                .requestMatchers("/design", "/orders").hasRole(USER.name())
-                .requestMatchers(POST, "/api/ingredients").hasAuthority("SCOPE_writeIngredients")
-                .requestMatchers(POST, "/api/tacos").hasAuthority("SCOPE_writeIngredients")
-                .requestMatchers(PUT, "/api/orders/*").hasAuthority("SCOPE_writeIngredients")
-                .requestMatchers(PATCH, "/api/orders/*").hasAuthority("SCOPE_writeIngredients")
-                .requestMatchers(DELETE, "/api/ingredients/*").hasAuthority("SCOPE_deleteIngredients")
-                .requestMatchers(DELETE, "/api/orders/*").hasAuthority("SCOPE_deleteIngredients")
-                .anyRequest().permitAll();
+                .pathMatchers("/design", "/orders").hasRole(USER.name())
+                .pathMatchers(POST, "/api/ingredients").hasAuthority("SCOPE_writeIngredients")
+                .pathMatchers(POST, "/api/tacos").hasAuthority("SCOPE_writeIngredients")
+                .pathMatchers(PUT, "/api/orders/*").hasAuthority("SCOPE_writeIngredients")
+                .pathMatchers(PATCH, "/api/orders/*").hasAuthority("SCOPE_writeIngredients")
+                .pathMatchers(DELETE, "/api/ingredients/*").hasAuthority("SCOPE_deleteIngredients")
+                .pathMatchers(DELETE, "/api/orders/*").hasAuthority("SCOPE_deleteIngredients")
+                .anyExchange().permitAll();
     }
 
-    private void loginFormConfiguration(FormLoginConfigurer<HttpSecurity> configurer) {
-        configurer.loginPage("/login").permitAll().defaultSuccessUrl("/design");
+    private void loginFormConfiguration(ServerHttpSecurity.FormLoginSpec configurer) {
+        configurer.loginPage("/login");
     }
 
-    private void resourceServerConfiguration(OAuth2ResourceServerConfigurer<HttpSecurity> configurer) {
+    private void resourceServerConfiguration(ServerHttpSecurity.OAuth2ResourceServerSpec configurer) {
         configurer.jwt(Customizer.withDefaults());
     }
 

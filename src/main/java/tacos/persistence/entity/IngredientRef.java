@@ -1,11 +1,11 @@
 package tacos.persistence.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import lombok.Value;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Value
-@Entity(name = "ingredient_ref")
+@Table(name = "ingredient_ref")
 public class IngredientRef {
     @Id
     String id;

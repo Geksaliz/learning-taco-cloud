@@ -3,13 +3,14 @@ package tacos.configuration.converter;
 import lombok.NonNull;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 import tacos.persistence.entity.Ingredient;
 import tacos.persistence.repository.IngredientRepository;
 
 import static java.lang.String.format;
 
 @Component
-public class IngredientByIdConverter implements Converter<String, Ingredient> {
+public class IngredientByIdConverter implements Converter<String, Mono<Ingredient>> {
     private final IngredientRepository ingredientRepository;
 
     public IngredientByIdConverter(IngredientRepository ingredientRepository) {
@@ -17,8 +18,7 @@ public class IngredientByIdConverter implements Converter<String, Ingredient> {
     }
 
     @Override
-    public Ingredient convert(@NonNull String id) {
-        return ingredientRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(format("Ingredient not found by id=%s", id)));
+    public Mono<Ingredient> convert(@NonNull String id) {
+        return ingredientRepository.findById(id);
     }
 }

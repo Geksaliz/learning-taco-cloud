@@ -1,7 +1,8 @@
 spring:
-  datasource:
-    generate-unique-name: false
-    name: tacocloud
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/taco-cloud
+    username: postgres
+    password: postgres
   security:
     oauth2:
       resource-server:
@@ -9,6 +10,11 @@ spring:
           jwk-set-uri: http://localhost:8090/oauth2/jwks
   kafka:
     bootstrap-server: localhost:9092
+
+  flyway:
+    url: jdbc:postgresql://localhost:5432/taco-cloud
+    user: postgres
+    password: postgres
 
 cors:
   origin:

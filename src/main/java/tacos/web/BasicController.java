@@ -2,17 +2,18 @@ package tacos.web;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import reactor.core.publisher.Mono;
 
 @Controller
 public class BasicController {
 
-	@GetMapping("/")
-	public String home() {
-		return "home";
-	}
+    @GetMapping("/")
+    public Mono<String> home() {
+        return Mono.just("home");
+    }
 
     @GetMapping("/login")
-	public String login() {
-		return "login";
-	}
+    public Mono<String> login() {
+        return Mono.just("login");
+    }
 }

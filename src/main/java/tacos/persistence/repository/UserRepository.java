@@ -1,12 +1,12 @@
 package tacos.persistence.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Mono;
 import tacos.persistence.entity.User;
 
-import java.util.Optional;
-
 @Repository
-public interface UserRepository extends CrudRepository<User, Long> {
-    Optional<User> findByUsername(String username);
+public interface UserRepository extends ReactiveCrudRepository<User, Long> {
+    Mono<UserDetails> findByUsername(String username);
 }

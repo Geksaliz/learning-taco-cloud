@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import tacos.domain.IngredientType;
 import tacos.persistence.entity.Ingredient;
 import tacos.persistence.entity.Taco;
@@ -30,7 +31,7 @@ public class DesignController {
 
     @ModelAttribute
     public void addIngredientsToModel(Model model) {
-        final Iterable<Ingredient> ingredients = ingredientRepository.findAll();
+        final Flux<Ingredient> ingredients = ingredientRepository.findAll();
 
         IngredientType[] types = IngredientType.values();
         for (IngredientType type : types) {
@@ -73,10 +74,10 @@ public class DesignController {
     }
 
     private Iterable<Ingredient> filterByType(
-            Iterable<Ingredient> ingredients,
+            Flux<Ingredient> ingredients,
             IngredientType type
     ) {
-        return StreamSupport.stream(ingredients.spliterator(), false)
+        return ingredients.toStream()
                 .filter(x -> x.getType().equals(type))
                 .collect(toList());
     }

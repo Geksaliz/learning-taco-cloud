@@ -1,9 +1,10 @@
 package tacos.persistence.entity;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Entity(name = "taco_order")
+@Table(name = "taco_order")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -21,7 +22,6 @@ public class TacoOrder implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private final Date placedAt = new Date();
@@ -51,10 +51,10 @@ public class TacoOrder implements Serializable {
     private String ccCW;
 
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    //@ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    //@OneToMany(cascade = CascadeType.ALL)
     private final List<Taco> tacos = new ArrayList<>();
 
     public void add(Taco taco) {

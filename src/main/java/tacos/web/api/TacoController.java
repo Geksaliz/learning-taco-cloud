@@ -1,51 +1,42 @@
 package tacos.web.api;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import tacos.persistence.entity.Taco;
 import tacos.persistence.repository.TacoRepository;
-
-import java.util.Optional;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@RequestMapping(path = "/api/tacos", produces = APPLICATION_JSON_VALUE)
-@RequiredArgsConstructor
+@RequestMapping(path = "/api/v1/tacos", produces = APPLICATION_JSON_VALUE)
 public class TacoController {
     private final TacoRepository tacoRepository;
+    private final int tacoPageSize;
 
-    @Value("${taco.page-size}")
-    private int tacoPageSize;
+    public TacoController(
+            TacoRepository tacoRepository,
+            @Value("${taco.page-size}") int tacoPageSize
+    ) {
+        this.tacoRepository = tacoRepository;
+        this.tacoPageSize = tacoPageSize;
+    }
 
     @GetMapping(params = "recent")
-    public Iterable<Taco> recentTacos() {
-        final PageRequest pageRequest = PageRequest.of(
-                0,
-                tacoPageSize,
-                Sort.by("createdAt").descending()
-        );
-
-        return tacoRepository.findAll(pageRequest).getContent();
+    public Flux<Taco> recentTacos() {
+        return tacoRepository.findAll().take(tacoPageSize);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Taco> findById(@PathVariable Long id) {
-        final Optional<Taco> optionalTaco = tacoRepository.findById(id);
-
-        return tacoRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public Mono<Taco> findById(@PathVariable Long id) {
+        return tacoRepository.findById(id);
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public Taco save(@RequestBody Taco taco) {
-        return tacoRepository.save(taco);
+    public Mono<Taco> save(@RequestBody Mono<Taco> taco) {
+        return tacoRepository.saveAll(taco).next();
     }
 }

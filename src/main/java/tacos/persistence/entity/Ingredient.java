@@ -1,11 +1,11 @@
 package tacos.persistence.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 import tacos.domain.IngredientType;
 
-@Entity
+@Table
 @Getter
 @ToString
 @AllArgsConstructor
