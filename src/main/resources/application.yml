@@ -5,6 +5,8 @@ spring:
     admin:
       client:
         url: http://localhost:8000
+  jmx:
+    enabled: true
 
   r2dbc:
     url: r2dbc:postgresql://localhost:5432/taco-cloud
@@ -38,5 +40,8 @@ management:
       show-details: WHEN_AUTHORIZED
   endpoints:
     web:
+      exposure:
+        include: '*'
+    jmx:
       exposure:
         include: '*'
