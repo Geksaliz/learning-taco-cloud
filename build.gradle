@@ -48,3 +48,7 @@ springBoot {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+bootBuildImage {
+        imageName = "geksaliz/${rootProject.name}:${version}"
+}
