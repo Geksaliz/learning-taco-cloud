@@ -17,15 +17,13 @@ import java.util.concurrent.atomic.AtomicLong;
 @ManagedResource
 public class TacoCounterManagedResource implements NotificationPublisherAware {
 
-    private AtomicLong counter;
+    private final AtomicLong counter = new AtomicLong(0);;
     private NotificationPublisher publisher;
 
 
     public TacoCounterManagedResource(TacoRepository repository) {
         repository.count()
-                .subscribe(initialCount -> {
-                    this.counter = new AtomicLong(initialCount);
-                });
+                .subscribe(counter::set);
     }
 
     @EventListener
